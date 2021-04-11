@@ -1,8 +1,10 @@
+# Detects positions of bodypart in the video 
+
 import cv2 
 import mediapipe as mp 
 import time 
 
-class PoseEstimator():
+class PoseDetector():
     def __init__(self, mode=False, upperBody = False, smooth=True, detectConf=.5, trackConf=.5): 
         self.mode = mode 
         self.upperBody = upperBody
@@ -30,28 +32,28 @@ class PoseEstimator():
         return img 
 
     def findPosition(self, img, draw=True): 
-        lms = [] 
+        self.lms = [] 
         if self.results.pose_landmarks: 
             for id, lm in enumerate(self.results.pose_landmarks.landmark): 
                 h,w,c = img.shape 
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                lms.append([id, cx, cy])
+                self.lms.append([id, cx, cy])
                 if draw: 
                     cv2.circle(img, (cx,cy), 9, (255,0,0), cv2.FILLED)
-        return lms 
+        return self.lms 
         
 
-cap = cv2.VideoCapture('media/1.mp4')
+cap = cv2.VideoCapture('media/2.mp4')
 
 def main():
-    estimator = PoseEstimator()
+    detector = PoseDetector()
 
     while True: 
         success, img = cap.read() 
-        estimator.fps(img) 
+        detector.fps(img) 
 
-        img = estimator.findPose(img)
-        lms = estimator.findPosition(img, draw=False)
+        img = detector.findPose(img)
+        lms = detector.findPosition(img, draw=False)
         if len(lms) > 0: 
             cv2.circle(img, (lms[14][1], lms[14][2]), 12, (255,0,255), cv2.FILLED)
 
