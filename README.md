@@ -7,4 +7,4 @@ pip install mediapipe
 ## Projects 
 - base.py - Detects positions of bodypart in the video 
 - correct.py - Counts number of dumbbell curls in the video 
-![Alt text](pose-detector-correct. gif) / ! [](pose-detector-correct. gif)
+![Alt text](pose-detector-correct.gif)
