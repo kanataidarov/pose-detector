@@ -5,12 +5,14 @@ import mediapipe as mp
 import time 
 
 class PoseDetector():
-    def __init__(self, mode=False, upperBody = False, smooth=True, detectConf=.5, trackConf=.5): 
+    def __init__(self, mode=False, upperBody = False, smooth=True, detectConf=.5, trackConf=.5, 
+            outFile="output.mp4", outWidth=720, outHeight=1280): 
         self.mode = mode 
         self.upperBody = upperBody
         self.smooth = smooth
         self.detectConf = detectConf
         self.trackConf = trackConf
+        self.writer = cv2.VideoWriter(outFile, cv2.VideoWriter_fourcc(*'XVID'), 24.0, (outWidth,outHeight))
         
         self.cTime = 0
         self.pTime = 0
@@ -41,24 +43,34 @@ class PoseDetector():
                 if draw: 
                     cv2.circle(img, (cx,cy), 9, (255,0,0), cv2.FILLED)
         return self.lms 
-        
+    
+    def writeFrame(self, frame): 
+        self.writer.write(frame)
 
-cap = cv2.VideoCapture('media/2.mp4')
+    def __exit__(self, exc_type, exc_value, traceback): 
+        self.writer.release()
+
 
 def main():
+    cap = cv2.VideoCapture('media/1.mp4')
     detector = PoseDetector()
 
     while True: 
-        success, img = cap.read() 
+        _, img = cap.read() 
+        img = cv2.resize(img, (720, 1280))
         detector.fps(img) 
 
         img = detector.findPose(img)
         lms = detector.findPosition(img, draw=False)
-        if len(lms) > 0: 
-            cv2.circle(img, (lms[14][1], lms[14][2]), 12, (255,0,255), cv2.FILLED)
+        if len(lms) > 13: 
+            cv2.circle(img, (lms[13][1], lms[13][2]), 12, (255,0,255), cv2.FILLED)
 
         cv2.imshow("Pose Detection", img)
-        cv2.waitKey(1) 
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            cap.release()
+            cv2.destroyAllWindows()
+            break
+        
 
 if __name__ == "__main__":
     main() 

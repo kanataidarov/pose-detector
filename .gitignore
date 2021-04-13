@@ -130,3 +130,5 @@ dmypy.json
 
 # data (too big) 
 media
+**/.DS_Store
+**/*.mp4
